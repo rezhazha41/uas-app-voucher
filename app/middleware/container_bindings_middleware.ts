@@ -1,3 +1,4 @@
+//app/middleware/container_bindings_middleware.ts
 import { Logger } from '@adonisjs/core/logger'
 import { HttpContext } from '@adonisjs/core/http'
 import { NextFn } from '@adonisjs/core/types/http'

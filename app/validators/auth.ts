@@ -1,3 +1,4 @@
+//app/validators/auth.ts
 import vine from '@vinejs/vine'
 
 export const registerValidator = vine.compile(

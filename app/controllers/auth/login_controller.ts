@@ -1,3 +1,4 @@
+//app/controllers/auth/login_controller.ts
 import User from '#models/user'
 import { loginValidator } from '#validators/auth'
 import type { HttpContext } from '@adonisjs/core/http'

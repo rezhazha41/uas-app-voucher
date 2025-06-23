@@ -1,3 +1,4 @@
+//database/migrations/1750605486843_create_users_table.ts
 import { BaseSchema } from '@adonisjs/lucid/schema'
 
 export default class extends BaseSchema {
