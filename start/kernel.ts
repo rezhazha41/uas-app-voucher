@@ -8,7 +8,6 @@
 | or the router.
 |
 */
-
 import router from '@adonisjs/core/services/router'
 import server from '@adonisjs/core/services/server'
 
@@ -45,6 +44,7 @@ router.use([
  * the routes or the routes group.
  */
 export const middleware = router.named({
+  admin: () => import('#middleware/admin_middleware'),
   guest: () => import('#middleware/guest_middleware'),
   auth: () => import('#middleware/auth_middleware'),
 })

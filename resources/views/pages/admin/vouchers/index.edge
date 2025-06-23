@@ -1,0 +1,25 @@
+@layout({ title: 'Kelola Voucher' })
+
+<div class="p-6">
+  <h2 class="text-2xl font-bold mb-4">Daftar Voucher</h2>
+  <a href="{{ route('admin.vouchers.create') }}" class="mb-4 inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Tambah Voucher</a>
+
+  <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+    @each(voucher in vouchers)
+      <div class="bg-white rounded-xl shadow p-4">
+        <h3 class="text-lg font-semibold text-blue-700">{{ voucher.name }}</h3>
+        <p class="text-gray-600 text-sm">{{ voucher.description }}</p>
+        <div class="flex gap-2 mt-2">
+          <a href="{{ route('admin.vouchers.edit', { id: voucher.id }) }}" class="text-sm text-blue-500 hover:underline">Edit</a>
+
+          <form action="{{ route('admin.vouchers.destroy', { id: voucher.id }) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus voucher ini?')">
+            {{ csrfField() }}
+            <input type="hidden" name="_method" value="DELETE" />
+            <button type="submit" class="text-sm text-red-500 hover:underline">Hapus</button>
+          </form>
+        </div>
+      </div>
+    @endeach
+  </div>
+</div>
+@end

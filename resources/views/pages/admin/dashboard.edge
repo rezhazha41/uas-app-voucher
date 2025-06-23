@@ -1,8 +1,42 @@
-@layout({ title: 'Admin Dashboard' })
+@layout({ title: 'Dashboard Admin' })
+<div class="min-h-screen bg-gray-100 p-6">
+  <div class="max-w-6xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6 text-gray-800">Dashboard Admin</h1>
 
-<div class="p-6">
-  <h1 class="text-2xl font-bold mb-4">Admin Dashboard</h1>
-  <p>Selamat datang, admin {{ auth.user.fullName }}!</p>
-  <p>Di sini kamu bisa mengelola semua voucher.</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+     <!-- Voucher Pulsa -->
+      <div class="bg-white rounded-2xl shadow p-5 hover:shadow-lg transition">
+      <h2 class="text-xl font-semibold text-blue-700 mb-2">Voucher Pulsa</h2>
+      <p class="text-sm text-gray-600">Kelola voucher pulsa semua operator.</p>
+    <a href="{{ route('admin.voucher_pulsa.index') }}"
+       class="inline-block mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+          Kelola
+        </a>
+
+    </div>
+
+
+      <!-- Voucher Paket Data -->
+      <div class="bg-white rounded-2xl shadow p-5 hover:shadow-lg transition">
+        <h2 class="text-xl font-semibold text-green-700 mb-2">Voucher Paket Data</h2>
+        <p class="text-sm text-gray-600">Kelola paket internet dan kuota.</p>
+        <button class="mt-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Kelola</button>
+      </div>
+
+      <!-- Diskon Belanja -->
+      <div class="bg-white rounded-2xl shadow p-5 hover:shadow-lg transition">
+        <h2 class="text-xl font-semibold text-pink-700 mb-2">Diskon Belanja</h2>
+        <p class="text-sm text-gray-600">Voucher diskon Alfamart, Indomaret, dll.</p>
+        <button class="mt-4 px-4 py-2 bg-pink-600 text-white rounded hover:bg-pink-700">Kelola</button>
+      </div>
+
+      <!-- Token Listrik -->
+      <div class="bg-white rounded-2xl shadow p-5 hover:shadow-lg transition">
+        <h2 class="text-xl font-semibold text-yellow-700 mb-2">Token Listrik</h2>
+        <p class="text-sm text-gray-600">Voucher token PLN prabayar.</p>
+        <button class="mt-4 px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600">Kelola</button>
+      </div>
+    </div>
+  </div>
 </div>
 @end
