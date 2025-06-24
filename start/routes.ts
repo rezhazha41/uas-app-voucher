@@ -6,7 +6,6 @@
 
 import router from '@adonisjs/core/services/router'
 import User from '#models/user'
-const VoucherPulsasController = () => import('#controllers/voucher_pulsas_controller')
 import { middleware } from './kernel.js'
 
 // Auth Controller
@@ -16,6 +15,9 @@ const LogoutController = () => import('#controllers/auth/logout_controller')
 
 // Admin Voucher Controller
 const VouchersController = () => import('#controllers/admin/vouchers_controller')
+const VoucherDiskonsController = () => import('#controllers/admin/voucher_diskons_controller')
+const VoucherListrikController = () => import('#controllers/admin/voucher_listriks_controller')
+const VoucherPulsasController = () => import('#controllers/voucher_pulsas_controller')
 
 /**
  * ============================
@@ -103,7 +105,7 @@ router
   .prefix('/admin/vouchers')
   .as('admin.vouchers')
 
-// halaman dashboard admin dan crud voucher pulsa
+// HALAMAN DASHBOARD ADMIN CRUD UNTUK VOUCHER PULSA
 router
   .group(() => {
     router.get('/', [VoucherPulsasController, 'index']).as('index')
@@ -116,12 +118,215 @@ router
   .prefix('/admin/voucher_pulsa')
   .as('admin.voucher_pulsa')
   .middleware([middleware.auth(), middleware.admin()])
-// Halaman daftar voucher pulsa untuk user
+// Daftar voucher pulsa yang BELUM dibeli
 router
   .get('/voucher-pulsa', async ({ view }) => {
-    // eslint-disable-next-line @unicorn/no-await-expression-member
     const VoucherPulsa = (await import('#models/voucher_pulsa')).default
-    const vouchers = await VoucherPulsa.all()
+    const vouchers = await VoucherPulsa.query().where('is_sold', false)
     return view.render('pages/voucher_pulsa/list', { vouchers })
   })
   .as('voucher_pulsa.list')
+
+// User membeli voucher pulsa
+router
+  .post('/voucher-pulsa/:id/beli', async ({ params, response, auth }) => {
+    const VoucherPulsa = (await import('#models/voucher_pulsa')).default
+    const voucher = await VoucherPulsa.findOrFail(params.id)
+
+    if (voucher.is_sold) {
+      return response.badRequest('Voucher sudah dibeli.')
+    }
+
+    voucher.is_sold = true
+    voucher.user_id = auth.user!.id // <- set user ID pembeli
+    await voucher.save()
+
+    return response.redirect().toRoute('voucher_pulsa.history') // redirect ke halaman riwayat pembelian
+  })
+  .as('voucher.beli')
+  .middleware([middleware.auth()])
+
+// Halaman riwayat voucher yang DIBELI oleh user login
+router
+  .get('/voucher-pulsa/riwayat', async ({ auth, view }) => {
+    const VoucherPulsa = (await import('#models/voucher_pulsa')).default
+    const user = auth.user!
+
+    const vouchers = await VoucherPulsa
+      .query()
+      .where('is_sold', true)
+      .andWhere('user_id', user.id) // <- ini penting agar hanya menampilkan milik user ini
+
+    return view.render('pages/voucher_pulsa/history', { vouchers })
+  })
+  .as('voucher_pulsa.history')
+  .middleware([middleware.auth()])
+  
+// Admin Voucher Data
+const VoucherDatasController = () => import('#controllers/admin/voucher_datas_controller')
+
+router
+  .group(() => {
+    router.get('/', [VoucherDatasController, 'index']).as('index')
+    router.get('/create', [VoucherDatasController, 'create']).as('create')
+    router.post('/', [VoucherDatasController, 'store']).as('store')
+    router.get('/:id/edit', [VoucherDatasController, 'edit']).as('edit')
+    router.put('/:id', [VoucherDatasController, 'update']).as('update')
+    router.delete('/:id', [VoucherDatasController, 'destroy']).as('destroy')
+  })
+  .prefix('/admin/voucher_data')
+  .as('admin.voucher_data')
+  .middleware([middleware.auth(), middleware.admin()])
+
+// Voucher Diskon Belanja
+router
+  .group(() => {
+    router.get('/', [VoucherDiskonsController, 'index']).as('index')
+    router.get('/create', [VoucherDiskonsController, 'create']).as('create')
+    router.post('/', [VoucherDiskonsController, 'store']).as('store')
+    router.get('/:id/edit', [VoucherDiskonsController, 'edit']).as('edit')
+    router.put('/:id', [VoucherDiskonsController, 'update']).as('update')
+    router.delete('/:id', [VoucherDiskonsController, 'destroy']).as('destroy')
+  })
+  .prefix('/admin/voucher_diskon')
+  .as('admin.voucher_diskon')
+  .middleware([middleware.auth(), middleware.admin()])
+
+// Voucher Token Listrik
+// Admin Voucher Token Listrik
+router
+  .group(() => {
+    router.get('/', [VoucherListrikController, 'index']).as('index')
+    router.get('/create', [VoucherListrikController, 'create']).as('create')
+    router.post('/', [VoucherListrikController, 'store']).as('store')
+    router.get('/:id/edit', [VoucherListrikController, 'edit']).as('edit')
+    router.put('/:id', [VoucherListrikController, 'update']).as('update')
+    router.delete('/:id', [VoucherListrikController, 'destroy']).as('destroy')
+  })
+  .prefix('/admin/voucher_listrik')
+  .as('admin.voucher_listrik')
+  .middleware([middleware.auth(), middleware.admin()])
+
+/////VOUCHER DATA
+router
+  .get('/voucher-data', async ({ view }) => {
+    const VoucherData = (await import('#models/voucher_data')).default
+    const vouchers = await VoucherData.query().where('is_sold', false)
+    return view.render('pages/voucher_data/list', { vouchers })
+  })
+  .as('voucher_data.list')
+
+router
+  .post('/voucher-data/:id/beli', async ({ params, response, auth }) => {
+    const VoucherData = (await import('#models/voucher_data')).default
+    const voucher = await VoucherData.findOrFail(params.id)
+
+    if (voucher.is_sold) {
+      return response.badRequest('Voucher sudah dibeli.')
+    }
+
+    voucher.is_sold = true
+    voucher.user_id = auth.user!.id
+    await voucher.save()
+
+    return response.redirect().toRoute('voucher_data.history')
+  })
+  .as('voucher_data.beli')
+  .middleware([middleware.auth()])
+
+router
+  .get('/voucher-data/riwayat', async ({ auth, view }) => {
+    const VoucherData = (await import('#models/voucher_data')).default
+    const user = auth.user!
+
+    const vouchers = await VoucherData
+      .query()
+      .where('is_sold', true)
+      .andWhere('user_id', user.id)
+
+    return view.render('pages/voucher_data/history', { vouchers })
+  })
+  .as('voucher_data.history')
+  .middleware([middleware.auth()])
+///voucher diskon
+router
+  .get('/voucher-diskon', async ({ view }) => {
+    const VoucherDiskon = (await import('#models/voucher_diskon')).default
+    const vouchers = await VoucherDiskon.query().where('is_sold', false)
+    return view.render('pages/voucher_diskon/list', { vouchers })
+  })
+  .as('voucher_diskon.list')
+
+router
+  .post('/voucher-diskon/:id/beli', async ({ params, response, auth }) => {
+    const VoucherDiskon = (await import('#models/voucher_diskon')).default
+    const voucher = await VoucherDiskon.findOrFail(params.id)
+
+    if (voucher.is_sold) {
+      return response.badRequest('Voucher sudah dibeli.')
+    }
+
+    voucher.is_sold = true
+    voucher.user_id = auth.user!.id
+    await voucher.save()
+
+    return response.redirect().toRoute('voucher_diskon.history')
+  })
+  .as('voucher_diskon.beli')
+  .middleware([middleware.auth()])
+
+router
+  .get('/voucher-diskon/riwayat', async ({ auth, view }) => {
+    const VoucherDiskon = (await import('#models/voucher_diskon')).default
+    const user = auth.user!
+
+    const vouchers = await VoucherDiskon
+      .query()
+      .where('is_sold', true)
+      .andWhere('user_id', user.id)
+
+    return view.render('pages/voucher_diskon/history', { vouchers })
+  })
+  .as('voucher_diskon.history')
+  .middleware([middleware.auth()])
+///voucher listrik
+router
+  .get('/voucher-listrik', async ({ view }) => {
+    const VoucherListrik = (await import('#models/voucher_listrik')).default
+    const vouchers = await VoucherListrik.query().where('is_sold', false)
+    return view.render('pages/voucher_listrik/list', { vouchers })
+  })
+  .as('voucher_listrik.list')
+
+router
+  .post('/voucher-listrik/:id/beli', async ({ params, response, auth }) => {
+    const VoucherListrik = (await import('#models/voucher_listrik')).default
+    const voucher = await VoucherListrik.findOrFail(params.id)
+
+    if (voucher.is_sold) {
+      return response.badRequest('Voucher sudah dibeli.')
+    }
+
+    voucher.is_sold = true
+    voucher.user_id = auth.user!.id
+    await voucher.save()
+
+    return response.redirect().toRoute('voucher_listrik.history')
+  })
+  .as('voucher_listrik.beli')
+  .middleware([middleware.auth()])
+
+router
+  .get('/voucher-listrik/riwayat', async ({ auth, view }) => {
+    const VoucherListrik = (await import('#models/voucher_listrik')).default
+    const user = auth.user!
+
+    const vouchers = await VoucherListrik
+      .query()
+      .where('is_sold', true)
+      .andWhere('user_id', user.id)
+
+    return view.render('pages/voucher_listrik/history', { vouchers })
+  })
+  .as('voucher_listrik.history')
+  .middleware([middleware.auth()])

@@ -1,10 +1,8 @@
-import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
+import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
-import User from './user.js'
-import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 
-
-export default class VoucherPulsa extends BaseModel {
+export default class VoucherDatas extends BaseModel {
+  static table = 'voucher_datas'
   @column({ isPrimary: true })
   id: number | undefined
 
@@ -24,7 +22,7 @@ export default class VoucherPulsa extends BaseModel {
   kode_voucher?: string
 
   @column()
-  is_sold: boolean | undefined 
+  is_sold: boolean | undefined
 
   @column.dateTime()
   expired_at?: DateTime
@@ -34,12 +32,5 @@ export default class VoucherPulsa extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   updatedAt: DateTime | undefined
-
-  @belongsTo(() => User)
-  user!: BelongsTo<typeof User> 
-
-  @column()
   user_id: number | undefined
 }
-
-

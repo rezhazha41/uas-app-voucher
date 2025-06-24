@@ -1,0 +1,35 @@
+@layout('layouts/admin', { title: 'Tambah Voucher Listrik' })
+
+<div class="max-w-2xl mx-auto p-6">
+  <h2 class="text-2xl font-bold mb-4">Tambah Voucher Token Listrik</h2>
+
+  <form method="POST" action="{{ route('admin.voucher_listrik.store') }}">
+    {{ csrfField() }}
+
+    <div class="mb-4">
+      <label for="nominal" class="block text-sm font-medium text-gray-700">Nominal (misal: 20.000)</label>
+      <input type="text" name="nominal" id="nominal" class="mt-1 block w-full border border-gray-300 rounded p-2" required>
+    </div>
+
+    <div class="mb-4">
+      <label for="price" class="block text-sm font-medium text-gray-700">Harga</label>
+      <input type="number" name="price" id="price" class="mt-1 block w-full border border-gray-300 rounded p-2" step="0.01" required>
+    </div>
+
+    <div class="mb-4">
+      <label for="description" class="block text-sm font-medium text-gray-700">Deskripsi</label>
+      <textarea name="description" id="description" class="mt-1 block w-full border border-gray-300 rounded p-2"></textarea>
+    </div>
+
+    <div class="mb-4">
+      <label for="expired_at" class="block text-sm font-medium text-gray-700">Tanggal Kadaluarsa</label>
+      <input type="datetime-local" name="expired_at" id="expired_at" class="mt-1 block w-full border border-gray-300 rounded p-2">
+    </div>
+
+    <div class="flex justify-end">
+      <a href="{{ route('admin.voucher_listrik.index') }}" class="mr-4 text-sm text-gray-600 hover:underline">Batal</a>
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Simpan</button>
+    </div>
+  </form>
+</div>
+@end

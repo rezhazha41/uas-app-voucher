@@ -1,7 +1,7 @@
-@layout('layouts/admin', { title: 'Voucher Pulsa' })
+@layout('layouts/admin', { title: 'Voucher Diskon' })
 
 <div class="p-6 max-w-7xl mx-auto">
-  <h2 class="text-2xl font-bold mb-4">Daftar Voucher Pulsa</h2>
+  <h2 class="text-2xl font-bold mb-4">Daftar Voucher Diskon</h2>
 
   <!-- Navigasi Home + Tambah -->
   <div class="flex items-center justify-between mb-6">
@@ -13,23 +13,23 @@
       <span class="font-semibold">Kembali ke Dashboard</span>
     </a>
 
-    <a href="{{ route('admin.voucher_pulsa.create') }}"
+    <a href="{{ route('admin.voucher_diskon.create') }}"
       class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Tambah Voucher</a>
   </div>
 
   <!-- List Voucher -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    @each(voucher in vouchers)
+    @each(voucher in data)
       <div id="voucher-{{ voucher.id }}" class="border rounded p-4 shadow bg-white">
-        <h3 class="text-lg font-semibold text-blue-700">{{ voucher.provider }} - {{ voucher.nominal }}</h3>
+        <h3 class="text-lg font-semibold text-blue-700">{{ voucher.merchant }} - {{ voucher.nominal }}</h3>
         <p class="text-gray-600 text-sm">Harga: Rp{{ voucher.price }}</p>
         <p class="text-gray-500 text-sm mb-4">{{ voucher.description }}</p>
         <div class="flex gap-3">
-          <a href="{{ route('admin.voucher_pulsa.edit', { id: voucher.id }) }}"
+          <a href="{{ route('admin.voucher_diskon.edit', { id: voucher.id }) }}"
             class="bg-yellow-500 text-white px-3 py-1 rounded text-sm hover:bg-yellow-600">Edit</a>
 
           <button
-            onclick="hapusVoucher('{{ route('admin.voucher_pulsa.destroy', { id: voucher.id }) }}', {{ voucher.id }})"
+            onclick="hapusVoucher('{{ route('admin.voucher_diskon.destroy', { id: voucher.id }) }}', {{ voucher.id }})"
             class="text-red-600 hover:underline text-sm">
             Hapus
           </button>

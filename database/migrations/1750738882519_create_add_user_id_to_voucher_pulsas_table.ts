@@ -5,13 +5,13 @@ export default class extends BaseSchema {
 
   async up() {
     this.schema.alterTable(this.tableName, (table) => {
-      table.timestamp('expired_at').nullable()
+      table.integer('user_id').unsigned().references('id').inTable('users').onDelete('CASCADE').nullable()
     })
   }
 
   async down() {
     this.schema.alterTable(this.tableName, (table) => {
-      table.dropColumn('expired_at')
+      table.dropColumn('user_id')
     })
   }
 }

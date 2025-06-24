@@ -1,0 +1,43 @@
+@layout('layouts/app', { title: 'Riwayat Voucher Data' })
+
+<div class="p-6 max-w-5xl mx-auto">
+  <h2 class="text-2xl font-bold mb-6">Riwayat Voucher Data</h2>
+
+  @if(vouchers.length > 0)
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      @each(voucher in vouchers)
+        <div class="border rounded p-4 shadow bg-white">
+          <h3 class="text-lg font-semibold text-blue-700">{{ voucher.provider }} - {{ voucher.nominal }}</h3>
+          <p class="text-gray-600 text-sm">Harga: Rp{{ voucher.price }}</p>
+          <p class="text-gray-500 text-sm mb-2">{{ voucher.description || '-' }}</p>
+          <p class="text-sm text-red-500 mb-2">
+            Expired: {{ voucher.expired_at ? voucher.expired_at.toFormat('dd LLL yyyy HH:mm') : 'Tidak ada' }}
+          </p>
+
+          <div class="mt-2">
+            <p class="text-sm font-semibold text-green-700">Kode Voucher:</p>
+            <div id="kode-{{ voucher.id }}" class="bg-gray-100 rounded px-2 py-1 font-mono text-blue-800 inline-block">
+              {{ voucher.kode_voucher }}
+            </div>
+            <button onclick="salin('{{ voucher.id }}')" class="mt-1 text-sm text-blue-600 hover:underline">Salin Kode</button>
+          </div>
+        </div>
+      @endeach
+    </div>
+  @else
+    <p class="text-gray-500">Kamu belum membeli voucher apa pun.</p>
+  @endif
+</div>
+
+<script>
+  function salin(id) {
+    const kode = document.getElementById('kode-' + id).innerText
+    navigator.clipboard.writeText(kode).then(() => {
+      alert('Kode voucher disalin ke clipboard!')
+    }).catch(() => {
+      alert('Gagal menyalin kode.')
+    })
+  }
+</script>
+
+@end

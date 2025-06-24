@@ -1,0 +1,38 @@
+@layout('layouts/admin', { title: 'Edit Voucher Data' })
+
+<div class="p-6 max-w-xl mx-auto">
+  <h2 class="text-xl font-bold mb-4">Edit Voucher Data</h2>
+
+  <form action="{{ route('admin.voucher_data.update', { id: voucher.id }) }}" method="POST" class="space-y-4">
+    {{ csrfField() }}
+    <input type="hidden" name="_method" value="PUT">
+
+    <div>
+      <label>Provider</label>
+      <input type="text" name="provider" class="form-input w-full" value="{{ voucher.provider }}" required>
+    </div>
+
+    <div>
+      <label>Ukuran Paket Data (Size)</label>
+      <input type="text" name="size" class="form-input w-full" value="{{ voucher.nominal }}" required>
+    </div>
+
+    <div>
+      <label>Harga</label>
+      <input type="number" step="0.01" name="price" class="form-input w-full" value="{{ voucher.price }}" required>
+    </div>
+
+    <div>
+      <label>Deskripsi</label>
+      <textarea name="description" class="form-textarea w-full">{{ voucher.description }}</textarea>
+    </div>
+
+    <div>
+      <label>Expired At</label>
+      <input type="datetime-local" name="expired_at" class="form-input w-full" value="{{ voucher.expired_at?.toISO().slice(0, 16) }}">
+    </div>
+
+    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Simpan Perubahan</button>
+  </form>
+</div>
+@end
