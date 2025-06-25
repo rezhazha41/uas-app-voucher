@@ -2,7 +2,6 @@ import type { HttpContext } from '@adonisjs/core/http'
 import VoucherPulsa from '#models/voucher_pulsa'
 import { nanoid } from 'nanoid'
 
-
 export default class VoucherPulsasController {
   async index({ view }: HttpContext) {
     const vouchers = await VoucherPulsa.all()
@@ -15,11 +14,12 @@ export default class VoucherPulsasController {
 
   async store({ request, response }: HttpContext) {
     const data = request.only(['provider', 'nominal', 'price', 'description', 'expired_at'])
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     const kode_voucher = `VC-${nanoid(6).toUpperCase()}`
-      await VoucherPulsa.create({
-    ...data,
-    kode_voucher, // ⬅️ disisipkan di sini
-  })
+    await VoucherPulsa.create({
+      ...data,
+      kode_voucher, // ⬅️ disisipkan di sini
+    })
     return response.redirect().toRoute('admin.voucher_pulsa.index')
   }
 

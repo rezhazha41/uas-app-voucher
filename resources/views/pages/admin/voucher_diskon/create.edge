@@ -4,15 +4,20 @@
   <h2 class="text-xl font-bold mb-4">Tambah Voucher Diskon</h2>
   <form action="{{ route('admin.voucher_diskon.store') }}" method="POST" class="space-y-4">
     {{ csrfField() }}
-    
+
+    <div>
+      <label>Nama Voucher</label>
+      <input type="text" name="nama" class="form-input w-full" required>
+    </div>
+
     <div>
       <label>Merchant</label>
       <input type="text" name="merchant" class="form-input w-full" required>
     </div>
 
     <div>
-      <label>Nominal</label>
-      <input type="text" name="nominal" class="form-input w-full" required>
+      <label>Nominal (contoh: 20000)</label>
+      <input type="number" name="nominal" class="form-input w-full" required>
     </div>
 
     <div>
@@ -26,11 +31,14 @@
     </div>
 
     <div>
-      <label>Expired At</label>
+      <label>Tanggal Kadaluarsa</label>
       <input type="datetime-local" name="expired_at" class="form-input w-full">
     </div>
 
-    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Simpan</button>
+    <div class="flex justify-end">
+      <a href="{{ route('admin.voucher_diskon.index') }}" class="text-sm text-gray-600 hover:underline mr-4">Batal</a>
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Simpan</button>
+    </div>
   </form>
 </div>
 @end

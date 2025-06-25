@@ -6,14 +6,17 @@ export default class extends BaseSchema {
   async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
-      table.string('merchant').notNullable() // Misal: Indomaret/Alfamart
-      table.string('nominal').notNullable() // Contoh: Rp5.000 / 10%
-      table.decimal('price', 10, 2).notNullable()
-      table.string('kode_voucher').notNullable()
-      table.string('description').nullable()
-      table.timestamp('expired_at').nullable()
+      table.string('nama').notNullable()
+      table.string('merchant').notNullable()
+      table.text('description').nullable()
+      table.integer('nominal').notNullable()
+      table.integer('price').notNullable()
+      table.string('kode_voucher').notNullable().unique()
       table.boolean('is_sold').notNullable().defaultTo(false)
-      table.timestamps(true)
+      table.integer('user_id').unsigned().references('id').inTable('users').onDelete('SET NULL')
+      table.timestamp('expired_at', { useTz: true })
+      table.timestamp('created_at', { useTz: true }).defaultTo(this.now())
+      table.timestamp('updated_at', { useTz: true }).defaultTo(this.now())
     })
   }
 

@@ -1,4 +1,3 @@
-//app/models/user.ts
 import { DateTime } from 'luxon'
 import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
@@ -22,6 +21,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @column()
   declare password: string
+
+  @column()
+  declare role: string // ✅ WAJIB pakai @column() supaya bisa dibaca dari DB
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

@@ -3,7 +3,7 @@ import { BaseSeeder } from '@adonisjs/lucid/seeders'
 import VoucherPulsa from '#models/voucher_pulsa'
 
 export default class extends BaseSeeder {
-  async run () {
+  async run() {
     await VoucherPulsa.createMany([
       {
         provider: 'Telkomsel',
@@ -20,7 +20,7 @@ export default class extends BaseSeeder {
         kode_voucher: 'XL-5GB-001',
         description: 'Voucher XL 5GB',
         expired_at: DateTime.fromISO('2025-12-01'),
-      }
+      },
     ])
   }
 }

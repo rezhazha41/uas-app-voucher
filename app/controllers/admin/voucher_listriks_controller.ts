@@ -6,7 +6,7 @@ export default class VoucherListriksController {
   // Menampilkan semua voucher listrik
   async index({ view }: HttpContext) {
     const vouchers = await VoucherListrik.all()
-    return view.render('pages/admin/voucher_listrik/index', { vouchers })
+    return view.render('pages/admin/voucher_listrik/index', { data: vouchers })
   }
 
   // Menampilkan form tambah voucher
@@ -16,11 +16,11 @@ export default class VoucherListriksController {
 
   // Menyimpan data baru
   async store({ request, response }: HttpContext) {
-    const data = request.only(['nominal', 'price', 'description', 'expired_at'])
+    const data = request.only(['provider', 'nominal', 'price', 'description', 'expired_at'])
 
     await VoucherListrik.create({
       ...data,
-      kode_token: `VL-${nanoid(6).toUpperCase()}`, // generate kode token unik
+      kode_voucher: `VL-${nanoid(6).toUpperCase()}`,
       is_sold: false,
     })
 
@@ -30,7 +30,7 @@ export default class VoucherListriksController {
   // Menampilkan form edit
   async edit({ params, view }: HttpContext) {
     const voucher = await VoucherListrik.findOrFail(params.id)
-    return view.render('pages/admin/voucher_listrik/edit', { voucher })
+    return view.render('pages/admin/voucher_listrik/edit', { data: voucher })
   }
 
   // Memperbarui data voucher
@@ -48,6 +48,6 @@ export default class VoucherListriksController {
   async destroy({ params, response }: HttpContext) {
     const voucher = await VoucherListrik.findOrFail(params.id)
     await voucher.delete()
-    return response.redirect().back()
+    return response.ok({ message: 'Berhasil dihapus' })
   }
 }

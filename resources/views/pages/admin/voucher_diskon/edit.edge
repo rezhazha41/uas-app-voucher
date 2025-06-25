@@ -7,13 +7,18 @@
     <input type="hidden" name="_method" value="PUT">
 
     <div>
+      <label>Nama Voucher</label>
+      <input type="text" name="nama" class="form-input w-full" value="{{ voucher.nama }}" required>
+    </div>
+
+    <div>
       <label>Merchant</label>
       <input type="text" name="merchant" class="form-input w-full" value="{{ voucher.merchant }}" required>
     </div>
 
     <div>
       <label>Nominal</label>
-      <input type="text" name="nominal" class="form-input w-full" value="{{ voucher.nominal }}" required>
+      <input type="number" name="nominal" class="form-input w-full" value="{{ voucher.nominal }}" required>
     </div>
 
     <div>
@@ -31,7 +36,10 @@
       <input type="datetime-local" name="expired_at" class="form-input w-full" value="{{ voucher.expired_at?.toISO().slice(0, 16) }}">
     </div>
 
-    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Simpan Perubahan</button>
+    <div class="flex justify-end">
+      <a href="{{ route('admin.voucher_diskon.index') }}" class="text-sm text-gray-600 hover:underline mr-4">Batal</a>
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Simpan Perubahan</button>
+    </div>
   </form>
 </div>
 @end

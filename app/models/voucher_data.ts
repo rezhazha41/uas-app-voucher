@@ -1,36 +1,44 @@
-import { BaseModel, column } from '@adonisjs/lucid/orm'
+import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
+import User from './user.js'
+import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 
-export default class VoucherDatas extends BaseModel {
+export default class VoucherData extends BaseModel {
   static table = 'voucher_datas'
+
   @column({ isPrimary: true })
-  id: number | undefined
+  declare id: number
 
   @column()
-  provider: string | undefined
+  declare provider: string
 
   @column()
-  nominal: string | undefined
+  declare nominal: string
 
   @column()
-  price: number | undefined
+  declare price: number
 
   @column()
-  description?: string
+  declare description: string
 
   @column()
-  kode_voucher?: string
+  declare kode_voucher: string
 
   @column()
-  is_sold: boolean | undefined
+  declare is_sold: boolean
+
+  @column()
+  declare user_id: number | null
 
   @column.dateTime()
-  expired_at?: DateTime
+  declare expired_at: DateTime
 
   @column.dateTime({ autoCreate: true })
-  createdAt: DateTime | undefined
+  declare createdAt: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  updatedAt: DateTime | undefined
-  user_id: number | undefined
+  declare updatedAt: DateTime
+
+  @belongsTo(() => User)
+  declare user: BelongsTo<typeof User>
 }

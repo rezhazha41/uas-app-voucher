@@ -8,11 +8,14 @@ export default class LoginController {
     return view.render('pages/auth/login')
   }
 
-  async store({ request, response, auth }: HttpContext) {
+  async store({ request, response, auth, session }: HttpContext) {
     const { email, password } = await request.validateUsing(loginValidator)
     const user = await User.verifyCredentials(email, password)
 
     await auth.use('web').login(user)
+
+    // Gunakan session.flash agar bisa muncul notifikasi di tampilan
+    session.flash('success', `Halo ${user.fullName}, kamu berhasil login! 🎉`)
 
     return response.redirect().toPath('/')
   }

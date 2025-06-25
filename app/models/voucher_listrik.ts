@@ -1,45 +1,42 @@
-import { BaseModel, column, beforeCreate } from '@adonisjs/lucid/orm'
+import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
-import { nanoid } from 'nanoid'
+import User from './user.js'
+import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 
 export default class VoucherListrik extends BaseModel {
-  public static table = 'voucher_listriks'
-
   @column({ isPrimary: true })
-  public id: number | undefined
+  declare id: number
 
   @column()
-  public nominal: string | undefined
+  declare provider: string
 
   @column()
-  public price: number | undefined
+  declare nominal: string // contoh: "100.000"
 
   @column()
-  public kode_token: string | undefined
+  declare price: number
 
   @column()
-  public description?: string
+  declare description: string
+
+  @column()
+  declare kode_voucher: string
+
+  @column()
+  declare is_sold: boolean
+
+  @column()
+  declare user_id: number | null
 
   @column.dateTime()
-  public expired_at?: DateTime
-
-  @column()
-  public is_sold: boolean | undefined
-
-  @column()
-  public user_id?: number
+  declare expired_at: DateTime
 
   @column.dateTime({ autoCreate: true })
-  public createdAt: DateTime | undefined
+  declare createdAt: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  public updatedAt: DateTime
-    /** Generate kode token otomatis sebelum create */
-    | undefined
+  declare updatedAt: DateTime
 
-  /** Generate kode token otomatis sebelum create */
-  @beforeCreate()
-  public static async generateToken(voucher: VoucherListrik) {
-    voucher.kode_token = `TOKEN-${nanoid(10).toUpperCase()}`
-  }
+  @belongsTo(() => User)
+  user!: BelongsTo<typeof User>
 }

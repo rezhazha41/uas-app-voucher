@@ -12,6 +12,7 @@ import { middleware } from './kernel.js'
 const RegisterController = () => import('#controllers/auth/registers_controller')
 const LoginController = () => import('#controllers/auth/login_controller')
 const LogoutController = () => import('#controllers/auth/logout_controller')
+const RiwayatController = () => import('#controllers/riwayats_controller')
 
 // Admin Voucher Controller
 const VouchersController = () => import('#controllers/admin/vouchers_controller')
@@ -45,7 +46,6 @@ router
  * ============================
  * ROUTE ADMIN LOGIN
  * ============================
- * (Tanpa middleware, supaya admin bisa login)
  */
 router
   .get('/admin/login', async ({ view }) => {
@@ -57,17 +57,25 @@ router
   .post('/admin/login', async ({ request, response, auth, session }) => {
     const { email, password } = request.only(['email', 'password'])
 
-    if (email !== 'admin@voucherku.com') {
-      session.flash('errors', { E_INVALID_CREDENTIALS: 'Bukan akun admin.' })
+    try {
+      const user = await User.verifyCredentials(email, password)
+
+      if (user.role !== 'admin') {
+        session.flash('errors', { E_INVALID_CREDENTIALS: 'Akun bukan admin.' })
+        return response.redirect().toRoute('admin.login.show')
+      }
+
+      await auth.use('web').login(user)
+
+      console.log('LOGIN BERHASIL:', user.email, user.role)
+
+      return response.redirect().toRoute('admin.vouchers.dashboard')
+    } catch (error) {
+      session.flash('errors', { E_INVALID_CREDENTIALS: 'Login gagal!' })
       return response.redirect().toRoute('admin.login.show')
     }
-
-    const user = await User.verifyCredentials(email, password)
-    await auth.use('web').login(user)
-
-    return response.redirect().toRoute('admin.vouchers.dashboard')
   })
-  .as('admin.login')
+  .as('admin.login') // ⛔️ TANPA middleware
 
 /**
  * ============================
@@ -104,6 +112,7 @@ router
   })
   .prefix('/admin/vouchers')
   .as('admin.vouchers')
+  .middleware([middleware.auth(), middleware.admin()])
 
 // HALAMAN DASHBOARD ADMIN CRUD UNTUK VOUCHER PULSA
 router
@@ -121,6 +130,7 @@ router
 // Daftar voucher pulsa yang BELUM dibeli
 router
   .get('/voucher-pulsa', async ({ view }) => {
+    // eslint-disable-next-line @unicorn/no-await-expression-member
     const VoucherPulsa = (await import('#models/voucher_pulsa')).default
     const vouchers = await VoucherPulsa.query().where('is_sold', false)
     return view.render('pages/voucher_pulsa/list', { vouchers })
@@ -130,6 +140,7 @@ router
 // User membeli voucher pulsa
 router
   .post('/voucher-pulsa/:id/beli', async ({ params, response, auth }) => {
+    // eslint-disable-next-line @unicorn/no-await-expression-member
     const VoucherPulsa = (await import('#models/voucher_pulsa')).default
     const voucher = await VoucherPulsa.findOrFail(params.id)
 
@@ -149,19 +160,17 @@ router
 // Halaman riwayat voucher yang DIBELI oleh user login
 router
   .get('/voucher-pulsa/riwayat', async ({ auth, view }) => {
+    // eslint-disable-next-line @unicorn/no-await-expression-member
     const VoucherPulsa = (await import('#models/voucher_pulsa')).default
     const user = auth.user!
 
-    const vouchers = await VoucherPulsa
-      .query()
-      .where('is_sold', true)
-      .andWhere('user_id', user.id) // <- ini penting agar hanya menampilkan milik user ini
+    const vouchers = await VoucherPulsa.query().where('is_sold', true).andWhere('user_id', user.id) // <- ini penting agar hanya menampilkan milik user ini
 
     return view.render('pages/voucher_pulsa/history', { vouchers })
   })
   .as('voucher_pulsa.history')
   .middleware([middleware.auth()])
-  
+
 // Admin Voucher Data
 const VoucherDatasController = () => import('#controllers/admin/voucher_datas_controller')
 
@@ -210,6 +219,7 @@ router
 /////VOUCHER DATA
 router
   .get('/voucher-data', async ({ view }) => {
+    // eslint-disable-next-line @unicorn/no-await-expression-member
     const VoucherData = (await import('#models/voucher_data')).default
     const vouchers = await VoucherData.query().where('is_sold', false)
     return view.render('pages/voucher_data/list', { vouchers })
@@ -218,6 +228,7 @@ router
 
 router
   .post('/voucher-data/:id/beli', async ({ params, response, auth }) => {
+    // eslint-disable-next-line @unicorn/no-await-expression-member
     const VoucherData = (await import('#models/voucher_data')).default
     const voucher = await VoucherData.findOrFail(params.id)
 
@@ -236,13 +247,11 @@ router
 
 router
   .get('/voucher-data/riwayat', async ({ auth, view }) => {
+    // eslint-disable-next-line @unicorn/no-await-expression-member
     const VoucherData = (await import('#models/voucher_data')).default
     const user = auth.user!
 
-    const vouchers = await VoucherData
-      .query()
-      .where('is_sold', true)
-      .andWhere('user_id', user.id)
+    const vouchers = await VoucherData.query().where('is_sold', true).andWhere('user_id', user.id)
 
     return view.render('pages/voucher_data/history', { vouchers })
   })
@@ -251,6 +260,7 @@ router
 ///voucher diskon
 router
   .get('/voucher-diskon', async ({ view }) => {
+    // eslint-disable-next-line @unicorn/no-await-expression-member
     const VoucherDiskon = (await import('#models/voucher_diskon')).default
     const vouchers = await VoucherDiskon.query().where('is_sold', false)
     return view.render('pages/voucher_diskon/list', { vouchers })
@@ -259,6 +269,7 @@ router
 
 router
   .post('/voucher-diskon/:id/beli', async ({ params, response, auth }) => {
+    // eslint-disable-next-line @unicorn/no-await-expression-member
     const VoucherDiskon = (await import('#models/voucher_diskon')).default
     const voucher = await VoucherDiskon.findOrFail(params.id)
 
@@ -277,13 +288,11 @@ router
 
 router
   .get('/voucher-diskon/riwayat', async ({ auth, view }) => {
+    // eslint-disable-next-line @unicorn/no-await-expression-member
     const VoucherDiskon = (await import('#models/voucher_diskon')).default
     const user = auth.user!
 
-    const vouchers = await VoucherDiskon
-      .query()
-      .where('is_sold', true)
-      .andWhere('user_id', user.id)
+    const vouchers = await VoucherDiskon.query().where('is_sold', true).andWhere('user_id', user.id)
 
     return view.render('pages/voucher_diskon/history', { vouchers })
   })
@@ -292,6 +301,7 @@ router
 ///voucher listrik
 router
   .get('/voucher-listrik', async ({ view }) => {
+    // eslint-disable-next-line @unicorn/no-await-expression-member
     const VoucherListrik = (await import('#models/voucher_listrik')).default
     const vouchers = await VoucherListrik.query().where('is_sold', false)
     return view.render('pages/voucher_listrik/list', { vouchers })
@@ -300,6 +310,7 @@ router
 
 router
   .post('/voucher-listrik/:id/beli', async ({ params, response, auth }) => {
+    // eslint-disable-next-line @unicorn/no-await-expression-member
     const VoucherListrik = (await import('#models/voucher_listrik')).default
     const voucher = await VoucherListrik.findOrFail(params.id)
 
@@ -318,11 +329,11 @@ router
 
 router
   .get('/voucher-listrik/riwayat', async ({ auth, view }) => {
+    // eslint-disable-next-line @unicorn/no-await-expression-member
     const VoucherListrik = (await import('#models/voucher_listrik')).default
     const user = auth.user!
 
-    const vouchers = await VoucherListrik
-      .query()
+    const vouchers = await VoucherListrik.query()
       .where('is_sold', true)
       .andWhere('user_id', user.id)
 
@@ -330,3 +341,5 @@ router
   })
   .as('voucher_listrik.history')
   .middleware([middleware.auth()])
+
+router.get('/riwayat', [RiwayatController, 'index']).as('riwayat').middleware([middleware.auth()])

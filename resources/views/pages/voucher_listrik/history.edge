@@ -1,43 +1,67 @@
-@layout('layouts/app', { title: 'Riwayat Voucher Data' })
+@layout('layouts/app', { title: 'Riwayat Voucher' })
 
-<div class="p-6 max-w-5xl mx-auto">
-  <h2 class="text-2xl font-bold mb-6">Riwayat Voucher Data</h2>
+<div class="max-w-6xl mx-auto p-6">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold text-gray-800">🔌 Riwayat Voucher Listrik</h2>
+    <a href="{{ route('/') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm shadow transition-all duration-300">
+      🏠 Kembali ke Home
+    </a>
+  </div>
 
   @if(vouchers.length > 0)
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
       @each(voucher in vouchers)
-        <div class="border rounded p-4 shadow bg-white">
-          <h3 class="text-lg font-semibold text-blue-700">{{ voucher.provider }} - {{ voucher.nominal }}</h3>
-          <p class="text-gray-600 text-sm">Harga: Rp{{ voucher.price }}</p>
-          <p class="text-gray-500 text-sm mb-2">{{ voucher.description || '-' }}</p>
-          <p class="text-sm text-red-500 mb-2">
-            Expired: {{ voucher.expired_at ? voucher.expired_at.toFormat('dd LLL yyyy HH:mm') : 'Tidak ada' }}
-          </p>
+        <div class="bg-white rounded-xl shadow-md p-5 border hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300">
+          <h3 class="text-lg font-semibold text-blue-700 mb-1">
+            ⚡ {{ voucher.provider || voucher.merchant || 'Voucher' }} - {{ voucher.nominal }}
+          </h3>
+          <p class="text-sm text-gray-600">💸 Harga: Rp{{ voucher.price }}</p>
+          <p class="text-sm text-gray-500 mt-1">📝 {{ voucher.description || 'Tidak ada deskripsi' }}</p>
+          <p class="text-sm text-red-500 mt-1">📅 Expired: {{ voucher.expired_at?.toFormat('dd LLL yyyy HH:mm') || 'Tidak tersedia' }}</p>
 
-          <div class="mt-2">
-            <p class="text-sm font-semibold text-green-700">Kode Voucher:</p>
-            <div id="kode-{{ voucher.id }}" class="bg-gray-100 rounded px-2 py-1 font-mono text-blue-800 inline-block">
+          <div class="mt-4">
+            <p class="text-sm font-semibold text-green-700">🎫 Kode Voucher:</p>
+            <div id="kode-{{ voucher.id }}" class="bg-gray-100 rounded px-3 py-1 font-mono text-blue-800 inline-block select-all">
               {{ voucher.kode_voucher }}
             </div>
-            <button onclick="salin('{{ voucher.id }}')" class="mt-1 text-sm text-blue-600 hover:underline">Salin Kode</button>
+            <button 
+              onclick="salin('{{ voucher.id }}')" 
+              class="ml-2 text-sm text-blue-600 hover:underline focus:outline-none"
+            >
+              📋 Salin
+            </button>
           </div>
         </div>
       @endeach
     </div>
   @else
-    <p class="text-gray-500">Kamu belum membeli voucher apa pun.</p>
+    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 px-4 py-3 rounded shadow animate-fade-in">
+      <p class="font-medium">Kamu belum membeli voucher listrik apa pun.</p>
+    </div>
   @endif
 </div>
 
 <script>
   function salin(id) {
-    const kode = document.getElementById('kode-' + id).innerText
-    navigator.clipboard.writeText(kode).then(() => {
-      alert('Kode voucher disalin ke clipboard!')
-    }).catch(() => {
-      alert('Gagal menyalin kode.')
-    })
+    const kodeEl = document.getElementById('kode-' + id)
+    if (!kodeEl) return alert('⚠️ Kode tidak ditemukan.')
+
+    const kode = kodeEl.innerText
+    navigator.clipboard.writeText(kode)
+      .then(() => alert('✅ Kode berhasil disalin ke clipboard!'))
+      .catch(() => alert('❌ Gagal menyalin kode.'))
   }
 </script>
+
+<style>
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease-out;
+  }
+</style>
 
 @end
